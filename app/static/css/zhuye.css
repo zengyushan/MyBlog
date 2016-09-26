@@ -1,0 +1,46 @@
+.title{
+    height: 150px;
+    width: 800px;
+    margin:0 auto;
+    background-color: #2aabd2;
+}
+
+.navbar{
+    margin:0 auto;
+    width: 800px;
+    background-color: #8a6d3b;
+}
+.content{
+    margin:0 224px;
+    width: 80px;
+    background-color: #86989B;
+}
+.content_nei{
+    width: 70px;
+    height:100%;
+    float: left;
+    background-color: #f0ad4e;
+}
+.zhengwen{
+    /*float: none;*/
+    width: 800px;
+    height:100%;
+    background-color: magenta;
+}
+.leftkong{
+    float:left;
+    width:224px;
+    background-color: #0000ff;
+}
+.rightkong{
+    float: right;
+    width: 224px;
+    background-color: #f0ad4e;
+}
+/*.denglu{*/
+    /*float: right;*/
+/*}*/
+
+/*.navbar-a{*/
+    /*font-size: 50px;*/
+/*}*/

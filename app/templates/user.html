@@ -1,0 +1,61 @@
+{% extends "zhuye.html" %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div>
+                {% for message in get_flashed_messages() %}
+                    {% if '您的资料已更新' in message %}
+                        您的资料已更新
+                    {% endif %}
+                {% endfor %}
+                <table>
+                    {% if current_user.is_administrator() %}
+                        <a href="{{ url_for('main.edit_profile_admin',id=user.id) }}">编辑(管理员)</a>
+                    {% else %}
+                        <tr>
+                            <td><a href="{{ url_for('main.edit_profile') }}">编辑</a></td>
+                        </tr>
+                    {% endif %}
+                    {% if user.username %}
+                        <tr>
+                            <td>用户名：{{ user.username }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if user.email %}
+                        <tr>
+                            <td>邮箱：{{ user.email }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if user.name %}
+                        <tr>
+                            <td>姓名：{{ user.name }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if user.location %}
+                        <tr>
+                            <td>所在地：{{ user.location }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if user.about_me %}
+                        <tr>
+                            <td>自我介绍：{{ user.about_me }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if user.member_since %}
+                        <tr>
+                            <td>注册日期：{{ user.member_since }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if user.last_seen %}
+                        <tr>
+                            <td>最后登录日期：{{ user.last_seen }}</td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+{% endblock content %}

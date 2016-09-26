@@ -1,0 +1,12 @@
+{% extends "zhuye.html" %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            {% for rz in rizhi %}
+                标题：<a href="rizhi/{{ rz.id }}">{{ rz.title }}</a><br>
+                正文：{{ rz.txt }}<br><br>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

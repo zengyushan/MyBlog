@@ -1,0 +1,7 @@
+您好 {{ user.username }},
+欢迎来到ME80的博客!
+请点击下面的链接来认证你的账户:
+# _external=True 参数要求程序生成完整的URL，其中包含协议（http://或https://）、主机名和端口。
+{{ url_for('auth.confirm', token=token, _external=True) }}
+
+注意: 答复这个邮件地址是不会被回应的.

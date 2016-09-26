@@ -1,0 +1,25 @@
+{% extends "zhuye.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{#{% block content_up %}#}
+{#    {{ super() }}#}
+{% block content %}
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            {% if form.email.data %}
+                {#        {{ get_flashed_messages }}#}
+                {#        {{ form.email.data }}#}
+                {#        {% for message in get_flashed_messages() %}#}
+                {#            {% if message %}#}
+                {#                {{ message }}#}
+                {#            {% endif %}#}
+                {#        {% endfor %}#}
+                {{ get_flashed_messages()[0] }}
+            {% endif %}
+            {{ wtf.quick_form(form) }}
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+{% endblock content %}
+{#{% endblock content_up %}#}
