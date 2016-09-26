@@ -1,5 +1,5 @@
 # MyBlog
-技术：python+flask+mysql
+技术：python2.7+flask+mysql
 
 IDE：pycharm
 
