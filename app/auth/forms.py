@@ -88,6 +88,6 @@ class NewPostForm(Form):
     txt = TextAreaField(u'文章',validators=[DataRequired()])
     submit = SubmitField(u'提交')
 
-# class CommentToCommentForm(Form):
-#     body = TextAreaField(u'回复',validators=[DataRequired()])
-#     submit = SubmitField(u'提交')
+class CommentToCommentForm(Form):
+    body = TextAreaField(u'',validators=[DataRequired()])
+    submit = SubmitField(u'提交')

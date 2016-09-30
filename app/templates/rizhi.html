@@ -3,21 +3,8 @@
 {% import "_comments.html" as comments %}
 
 {% block content %}
-{#    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.js"></script>#}
-{#    <script>#}
-{#        $(document).ready(function () {#}
-{#            $('#reply').click(function () {#}
-{#                $('#ReplyDiv').css('display', 'block');#}
-{#                $('#reply').css('display', 'none')#}
-{#                $('#no_reply').css('display', 'block')#}
-{#            });#}
-{#            $('#no_reply').click(function () {#}
-{#                $('#ReplyDiv').css('display', 'none');#}
-{#                $('#reply').css('display', 'block')#}
-{#                $('#no_reply').css('display', 'none')#}
-{#            });#}
-{#        });#}
-{#    </script>#}
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.js"></script>
+
     <div class="row">
         <div class="col-md-1"></div>
         <div class="col-md-10">
@@ -42,20 +29,89 @@
                     <a href="{{ url_for('auth.delete_comment',comment_id=comment.id,post_id=comment.post_id) }}">删除</a>
                     <br>
                 {% endif %}
-                用户：{{ comment.username }}<br>
+                {{ comment.username }}<br>
                 评论：{{ comment.body }}<br>
-{#                这是当前评论的主键id：{{ comment.id }}#}
-
-                {#                <a href="#"><span id="reply" style="display: block;">回复</span></a>#}
-                {#                <a href="#"><span id="no_reply" style="display: none;">取消回复</span></a>#}
-                {#                <div id="ReplyDiv" style="display:none">#}
-                {# auth.add_comment_to_comment',rizhi_id=rizhi.id,comment_id=comment.id #}
-                {#                    <form action="/comments_to_comment/{{ rizhi.id }}/{{ comment.id }}/{{ current_user.username }}/{{ comment.username }}" method="post">#}
-                {#                        <textarea name="txt" rows="5" cols="80"  id="txt"></textarea><br>#}
-                {#                        <input type="submit" value="提交"/>#}
-                {#                    </form>#}
-                {#                </div>#}
-                <br><br>
+                {#                这是当前评论的主键id：{{ comment.id }}<br>#}
+                {# 如果当前用户以认证 #}
+                {% if current_user.is_authenticated() %}
+                    <script>
+                        $(document).ready(function () {
+                            $('#a_reply_comment_block_first_{{ comment.id }}').click(function () {
+                                $('#div_reply_comment_first_{{ comment.id }}').css('display', 'block');
+                                $('#a_reply_comment_block_first_{{ comment.id }}').css('display', 'none')
+                                $('#a_reply_comment_none_first_{{ comment.id }}').css('display', 'block')
+                            });
+                            $('#a_reply_comment_none_first_{{ comment.id }}').click(function () {
+                                $('#div_reply_comment_first_{{ comment.id }}').css('display', 'none');
+                                $('#a_reply_comment_block_first_{{ comment.id }}').css('display', 'block')
+                                $('#a_reply_comment_none_first_{{ comment.id }}').css('display', 'none')
+                            });
+                        });
+                    </script>
+                    {# 这里是评论下的第一个回复按钮 #}
+                    <a id="a_reply_comment_block_first_{{ comment.id }}"
+                       style="display: block">回复</a>
+                    <a id="a_reply_comment_none_first_{{ comment.id }}"
+                       style="display: none">取消回复</a>
+                    <div id="div_reply_comment_first_{{ comment.id }}"
+                         style="display: none">
+                        回复：{{ comment.username }}
+                        {#                                {{ wtf.quick_form(comment_to_comment_form) }}#}
+                        <form action="/reply/{{ rizhi.id }}/{{ comment.id }}/{{ comment.username }}"
+                              method="post">
+                            {#                                    {{ form.body }}#}
+                            <textarea name="body"></textarea>
+                            <input type="submit" value="提交">
+                        </form>
+                    </div>
+                {% endif %}
+                <br>
+                {# 如果回复评论的数据不为空列表 #}
+                {% if reply_comments != [] %}
+                    {% for reply_comment in reply_comments %}
+                        {# 如果在回复评论的数据库的某行里，存在与当前日志评论的主键id一样id的数据#}
+                        {% if reply_comment.get(comment.id) %}
+                            {# 就从字典里取值 #}
+                            {{ reply_comment.get(comment.id).username }}&nbsp;回复&nbsp;
+                            {{ reply_comment.get(comment.id).tousername }}：<br>
+                            {{ reply_comment.get(comment.id).body }}
+                            {# 如果当前用户以认证 #}
+                            {% if current_user.is_authenticated() %}
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#a_reply_comment_block_{{ reply_comment.get(comment.id).id }}').click(function () {
+                                            $('#div_reply_comment_{{ reply_comment.get(comment.id).id }}').css('display', 'block');
+                                            $('#a_reply_comment_block_{{ reply_comment.get(comment.id).id }}').css('display', 'none')
+                                            $('#a_reply_comment_none_{{ reply_comment.get(comment.id).id }}').css('display', 'block')
+                                        });
+                                        $('#a_reply_comment_none_{{ reply_comment.get(comment.id).id }}').click(function () {
+                                            $('#div_reply_comment_{{ reply_comment.get(comment.id).id }}').css('display', 'none');
+                                            $('#a_reply_comment_block_{{ reply_comment.get(comment.id).id }}').css('display', 'block')
+                                            $('#a_reply_comment_none_{{ reply_comment.get(comment.id).id }}').css('display', 'none')
+                                        });
+                                    });
+                                </script>
+                                <a id="a_reply_comment_block_{{ reply_comment.get(comment.id).id }}"
+                                   style="display: block">回复</a>
+                                <a id="a_reply_comment_none_{{ reply_comment.get(comment.id).id }}"
+                                   style="display: none">取消回复</a>
+                                <div id="div_reply_comment_{{ reply_comment.get(comment.id).id }}"
+                                     style="display: none">
+                                    回复：{{ reply_comment.get(comment.id).username }}
+                                    {#                                {{ wtf.quick_form(comment_to_comment_form) }}#}
+                                    <form action="/reply/{{ rizhi.id }}/{{ comment.id }}/{{ reply_comment.get(comment.id).username }}"
+                                          method="post">
+                                        {#                                    {{ form.body }}#}
+                                        <textarea name="body"></textarea>
+                                        <input type="submit" value="提交">
+                                    </form>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                {% endif %}
+                <hr><br><br>
             {% endfor %}
             {#            <div style="position: fixed;bottom: 0;">#}
             {% if pagination %}

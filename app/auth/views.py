@@ -167,8 +167,13 @@ def aboutme():
 def delete_post(id):
     rizhi = Rizhi.query.filter_by(id=id).first_or_404()
     comment_all = Comment.query.filter_by(post_id=id).all()
+
     # 在循环中删除每一条评论数据
     for comment in comment_all:
+        commentstocomment = CommentsToComment.query.filter_by(follow_comment_id=comment.id).all()
+        for ctc in commentstocomment:
+            newdb.session.delete(ctc)
+            newdb.session.commit()
         newdb.session.delete(comment)
     newdb.session.delete(rizhi)
     newdb.session.commit()
@@ -176,7 +181,13 @@ def delete_post(id):
 
 @auth.route('/delete_comment/<int:comment_id>/<int:post_id>')
 def delete_comment(comment_id,post_id):
+    # 查询当前日志评论的数据
     comment = Comment.query.get_or_404(comment_id)
+    # 查询当前日志评论下的所有回复评论数据
+    reply_comments = CommentsToComment.query.filter_by(follow_comment_id=comment_id).all()
+    for reply_comment in reply_comments:
+        newdb.session.delete(reply_comment)
+    newdb.session.commit()
     newdb.session.delete(comment)
     newdb.session.commit()
     return redirect(url_for('main.rizhi',id=post_id))

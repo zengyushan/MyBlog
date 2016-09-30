@@ -4,8 +4,9 @@ from app.mysql_db import db as newdb
 from .. import auth
 from . import main
 from flask import render_template, redirect, request, url_for, flash, abort, current_app
-from app.models import Rizhi, Liuyanban, User, Role, Permission, Comment
-from ..auth.forms import LoginForm, RegistrationForm, EditProfileForm, EditProfileAdminForm, PinglunForm, CommentForm
+from app.models import Rizhi, Liuyanban, User, Role, Permission, Comment, CommentsToComment
+from ..auth.forms import LoginForm, RegistrationForm, EditProfileForm, EditProfileAdminForm, PinglunForm, CommentForm, \
+    CommentToCommentForm
 from flask_login import login_user, logout_user, login_required, current_user
 from ..email import send_email
 from ..decorators import admin_required
@@ -106,18 +107,32 @@ def edit(id):
     return render_template('edit_post.html', form=form)
 
 
-@main.route('/rizhi/<int:id>', methods=['GET', 'POST'])
+@main.route('/reply/<int:rizhi_id>/<int:comment_id>/<string:to_username>', methods=['GET', 'POST'])
+def reply(rizhi_id,comment_id,to_username):
+    comment_to_comment_form = CommentToCommentForm()
+    # 如果对某条评论提交回复
+    # if comment_to_comment_form.validate_on_submit():
+    commentstocomment = CommentsToComment(body=comment_to_comment_form.body.data, follow_comment_id=comment_id,
+                                          username=current_user.username, tousername=to_username)
+    newdb.session.add(commentstocomment)
+    newdb.session.commit()
+    return redirect(url_for('main.rizhi', id=rizhi_id))
+
+
+@main.route('/rizhi/<int:id>/', methods=['GET', 'POST'])
 # @main.route('/rizhi/<int:id>/<int:comment_id>',methods=['GET','POST'])
-def rizhi(id):
+def rizhi(id, *comment_id):
     rizhi = Rizhi.query.get_or_404(id)
     comment_to_post_form = CommentForm()
-
-    # comment_to_comment_form = CommentToCommentForm()
+    #
+    comment_to_comment_form = CommentToCommentForm()
+    # print comment_id
+    #
     # # 如果对某条评论提交回复
     # if comment_to_comment_form.validate_on_submit():
-    #     comment = Comment(body=comment_to_comment_form.body.data, author_id=current_user.id,
-    #                       comment_follow_id=comment_id)
-    #     newdb.session.add(comment)
+    #     commentstocomment = CommentsToComment(body=comment_to_comment_form.body.data, follow_comment_id=comment_id,
+    #                       username=current_user.username,tousername=to_username)
+    #     newdb.session.add(commentstocomment)
     #     newdb.session.commit()
     #     return redirect(url_for('main.rizhi',id=id))
 
@@ -133,16 +148,25 @@ def rizhi(id):
     if page == -1:
         # page是显示哪一页
         page = (Comment.query.filter_by(post_id=id).count() - 1) // current_app.config['ME80_COMMENTS_PER_PAGE'] + 1
-        print page
-    print 22222222222222222
+
     # 如果此日志还没有任何评论()
     if Comment.query.filter_by(post_id=id).all() == []:
-        print 1111111111111111
         print Comment.query.filter_by(post_id=id).all()
         return render_template('rizhi.html', rizhi=rizhi, form=comment_to_post_form, pagination=None, id=id)
 
     pagination = Comment.query.filter_by(post_id=Comment.query.filter_by(post_id=id).first().post_id).order_by(
         Comment.timestamp.desc()).paginate(page, per_page=current_app.config[
         'ME80_COMMENTS_PER_PAGE'], error_out=False)
-
-    return render_template('rizhi.html', rizhi=rizhi, form=comment_to_post_form, pagination=pagination, id=id)
+    # 准备一个用来装回复评论信息的列表
+    reply_comments = []
+    # 先收集当前日志页要显示的所有对日志的评论id
+    for comment_id in Comment.query.all():
+        # 通过对日志的评论id来查询下面所有相应的回复
+        commentstocomment = CommentsToComment.query.filter_by(follow_comment_id=comment_id.id).all()
+        for apply_comment in commentstocomment:
+            # 创建只含一个键值对的字典
+            single_dict = {apply_comment.follow_comment_id: apply_comment}
+            # 将包含单条回复评论append进列表
+            reply_comments.append(single_dict)
+    return render_template('rizhi.html', rizhi=rizhi, form=comment_to_post_form, pagination=pagination, id=id,
+                           reply_comments=reply_comments, comment_to_comment_form=comment_to_comment_form)
