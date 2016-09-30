@@ -25,8 +25,8 @@ class DevelopmentConfig(Config):
     MAIL_USE_TLS = True
     # MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     # MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_USERNAME = 'zyszys805@139.com'
-    MAIL_PASSWORD = '57yoaa6nby'
+    MAIL_USERNAME = '邮箱地址'
+    MAIL_PASSWORD = '邮箱密码'
     # 此类，和下面两个类的SQLALCHEMY_DATABASE_URI都不一样，确保程序在不同的环境中运行(数据库都不一样)
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'mysql://root:12345@localhost/blog'
